@@ -9,3 +9,5 @@ test_stuff.go
 *.exe
 *.class
 
+.env
+test/
