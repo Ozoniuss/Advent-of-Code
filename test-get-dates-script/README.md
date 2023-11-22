@@ -1,0 +1,3 @@
+A simple script that checks the output obtained when converting one Advent of Code problem HTML page into a directory-friendly name. For example [here](https://adventofcode.com/2022/day/1) the title is "--- Day 1: Calorie Counting ---" which gets converted to "01-calorie-counting", a directory-friendly name.
+
+Originally I had a python script that parsed the HTML and did the conversion, but I wanted to be a true Linux user and did some grep and sed magic instead. Here I've compared the output of the two scripts to see if there are any differences. It also validates whether or not the script will work just fine for 2023.
