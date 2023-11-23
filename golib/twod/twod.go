@@ -31,6 +31,7 @@ var (
 	ORIGIN Location = Location{0, 0}
 )
 
+// basic directions
 var (
 	// Moves one unit to the left of the x-axis.
 	LEFT Direction = Direction{0, -1}
@@ -45,6 +46,27 @@ var (
 	// Doesn't move.
 	NULL Direction = Direction{0, 0}
 )
+
+// TranslateByInteger translates the current direction by a given integer factor.
+func TranslateByInteger(d Direction, factor int) Direction {
+	return Direction{d[0] * factor, d[1] * factor}
+}
+
+// TurnLeft rotates the current direction by 90 degrees counter-clockwise
+func TurnLeft(d Direction) Direction {
+	return Direction{-d[1], d[0]}
+}
+
+// TurnRight rotates the current direction by 90 degrees clockwise
+func TurnRight(d Direction) Direction {
+	return Direction{d[1], -d[0]}
+}
+
+// TurnAround reverses the current direction, such that the original direction
+// and the new one add up to 0.
+func TurnAround(d Direction) Direction {
+	return Direction{-d[0], -d[1]}
+}
 
 /* Directions, expressed as cardinal directions. */
 
