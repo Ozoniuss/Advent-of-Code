@@ -9,6 +9,11 @@ type Location [2]int
 // in the plane.
 type Direction [2]int
 
+// ManhattanDistance returns the Manhattan distance between two locations.
+func ManhattanDistance(l1, l2 Location) int {
+	return abs(l1[0]-l2[0]) + abs(l1[1]-l2[1])
+}
+
 // Move takes an initial location and a direction, and returns the new location
 // after moving in that direction.
 func Move(l Location, d Direction) Location {
@@ -67,3 +72,12 @@ var (
 	// y-axis.
 	SW Direction = Direction{1, -1}
 )
+
+// abs returns the absolute value of an integer.
+func abs(x int) int {
+	if x >= 0 {
+		return x
+	} else {
+		return -x
+	}
+}
