@@ -4,6 +4,8 @@ A package with helpers for solving the problems involving any sort of 2D map. Th
 
 Example problems where this _could_ be useful:
 
+-   https://adventofcode.com/2016/day/1
+-   https://adventofcode.com/2016/day/2
 -   https://adventofcode.com/2022/day/8
 -   https://adventofcode.com/2022/day/9
 -   https://adventofcode.com/2022/day/12
