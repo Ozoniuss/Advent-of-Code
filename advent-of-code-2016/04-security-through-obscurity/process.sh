@@ -1,0 +1,1 @@
+sed -E  "s/(.*)([0-9]{3,})\[(.*)\]/\1 \2 \3/g" input.txt | sed s/-//g > processed.txt
