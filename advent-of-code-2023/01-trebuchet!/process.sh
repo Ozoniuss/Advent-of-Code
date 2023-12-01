@@ -1,1 +1,0 @@
-cat input.txt | sed -E "s/([0-9])/\1 /g" | sed -E "s/([a-z]{1})([0-9])/\1 \2/g" > processed.txt
