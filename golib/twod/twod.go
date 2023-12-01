@@ -1,5 +1,7 @@
 package twod
 
+import "aoc/golib/maths"
+
 // Location represents the two-dimensional integer coordinates of a point in
 // the place.
 type Location [2]int
@@ -11,7 +13,7 @@ type Direction [2]int
 
 // ManhattanDistance returns the Manhattan distance between two locations.
 func ManhattanDistance(l1, l2 Location) int {
-	return abs(l1[0]-l2[0]) + abs(l1[1]-l2[1])
+	return maths.Abs(l1[0]-l2[0]) + maths.Abs(l1[1]-l2[1])
 }
 
 // Move takes an initial location and a direction, and returns the new location
@@ -24,6 +26,57 @@ func Move(l Location, d Direction) Location {
 // and vertical component. It works the same way as adding two vectors.
 func AddDirs(d1, d2 Direction) Direction {
 	return Direction{d1[0] + d2[0], d1[1] + d2[1]}
+}
+
+// DirFromRune returns a basic direction from a rune representation.
+func DirFromRune(dir rune) Direction {
+	if dir == 'L' {
+		return LEFT
+	}
+	if dir == 'R' {
+		return RIGHT
+	}
+	if dir == 'D' {
+		return DOWN
+	}
+	if dir == 'U' {
+		return UP
+	}
+	return NULL
+}
+
+// DirFromChar returns a basic direction from a char representation.
+func DirFromChar(dir byte) Direction {
+	if dir == 'L' {
+		return LEFT
+	}
+	if dir == 'R' {
+		return RIGHT
+	}
+	if dir == 'D' {
+		return DOWN
+	}
+	if dir == 'U' {
+		return UP
+	}
+	return NULL
+}
+
+// DirFromString returns a basic direction from a string representation.
+func DirFromString(dir string) Direction {
+	if dir == "L" {
+		return LEFT
+	}
+	if dir == "R" {
+		return RIGHT
+	}
+	if dir == "D" {
+		return DOWN
+	}
+	if dir == "U" {
+		return UP
+	}
+	return NULL
 }
 
 var (
@@ -94,12 +147,3 @@ var (
 	// y-axis.
 	SW Direction = Direction{1, -1}
 )
-
-// abs returns the absolute value of an integer.
-func abs(x int) int {
-	if x >= 0 {
-		return x
-	} else {
-		return -x
-	}
-}

@@ -1,9 +1,8 @@
 package twod
 
 import (
+	"fmt"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestMove(t *testing.T) {
@@ -43,13 +42,14 @@ func TestMove(t *testing.T) {
 			expected: Location{predefinedDir[0], predefinedDir[1]},
 		})
 	}
-	for _, t := range tests {
-		assert.Equal(t.expected, Move(t.loc, t.dir))
+	for _, tt := range tests {
+		if tt.expected != Move(tt.loc, tt.dir) {
+			t.Errorf("got %v, want %v", Move(tt.loc, tt.dir), tt.expected)
+		}
 	}
 }
 
-func testAddDirs(t *testing.T) {
-	assert := assert.New(t)
+func TestAddDirs(t *testing.T) {
 	type test struct {
 		dir1     Direction
 		dir2     Direction
@@ -73,7 +73,9 @@ func testAddDirs(t *testing.T) {
 		},
 	}
 
-	for _, t := range tests {
-		assert.Equal(t.expected, AddDirs(t.dir1, t.dir2))
+	for _, tt := range tests {
+		if tt.expected != AddDirs(tt.dir1, tt.dir2) {
+			fmt.Printf("got %v, want %v", AddDirs(tt.dir1, tt.dir2), tt.expected)
+		}
 	}
 }
