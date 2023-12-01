@@ -13,8 +13,9 @@ get_dir_name () { \
     # remove --- Day ... --- border
     sed -E "s/---\sDay\s(.*)\s---$/\1/g" | \
 
-    # remove special characters
-    sed -E "s/[\:\<\>\"\?\*\,]//g" | \
+    # remove special characters, including "," "!" and ''' because go modules
+    # don't play well with them
+    sed -E "s/[\:\<\>\"\?\*\,\'\!]//g" | \
 
     # replace whitespaces with -
     sed -E "s/\s/-/g" | \
