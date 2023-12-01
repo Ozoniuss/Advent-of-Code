@@ -31,12 +31,13 @@ get_dir_name () { \
     ; \
 }
 
+SCRIPT_DIR=$(dirname $0)
+source "$SCRIPT_DIR/.env"
 
-source .env
 SESSION_ID=$AOC_SESSION_ID
 
 DAY=1
-YEAR=2015
+YEAR=2023
 
 if [[ ! -z $1 ]]
 then
@@ -50,6 +51,14 @@ fi
 
 URL="https://adventofcode.com/$YEAR/day/$DAY"
 echo $URL
+
+STATUS_CODE=$(curl -s -I -H "Cookie: session=$SESSION_ID" "$URL" 2>/dev/null | head -n 1 | cut -d$' ' -f2)
+if [ $STATUS_CODE == 404 ]
+then
+    echo 'puzzle not up yet'
+    exit 0
+fi
+
 
 # works regardless the session is actually set or not
 DIR=$(get_dir_name)
