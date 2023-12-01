@@ -31,18 +31,17 @@ func part1() {
 	}
 }
 
-func part2() {
-	for _, line := range inputLines {
-	}
-}
-
 func main() {
 	// Run only 1 profile at a time!
 	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	// defer profile.Start(profile.MemProfile, profile.ProfilePath("."), profile.MemProfileRate(1)).Stop()
 
-	// This improves speed, but make these functions return something for
-	// benchmarks once problem is solved.
+	// No return value improves speed during contest, but make these functions
+	// return something for benchmarks once problem is solved.
+	//
+	// Part 2 is not written above and commented below so that template compiles
+	// while solving part 1.
+
 	part1()
-	part2()
+	// part2()
 }
