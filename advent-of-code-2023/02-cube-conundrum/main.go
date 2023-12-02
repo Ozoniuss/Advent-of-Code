@@ -29,62 +29,63 @@ func readlines() []string {
 	return lines
 }
 
-func processOneGame(game string) (int, int, int) {
+func findScores(round string) (int, int, int) {
 	red := 0
 	green := 0
 	blue := 0
 
 	var eoc int
 	for eoc != -1 {
-		var currentGameWithColor string
-		eoc = strings.Index(game, ", ")
+		var currentScoreWithColor string
+		eoc = strings.Index(round, ", ")
 		if eoc == -1 {
-			currentGameWithColor = game
+			currentScoreWithColor = round
 		} else {
-			currentGameWithColor = game[:eoc]
-			game = game[eoc+2:]
+			currentScoreWithColor = round[:eoc]
+			round = round[eoc+2:]
 		}
 
-		space := strings.Index(currentGameWithColor, " ")
-		vals := currentGameWithColor[:space]
-		color := currentGameWithColor[space+1:]
+		space := strings.Index(currentScoreWithColor, " ")
+		scoreStr := currentScoreWithColor[:space]
+		color := currentScoreWithColor[space+1:]
 
+		score, _ := strconv.Atoi(scoreStr)
 		if color == "red" {
-			val, _ := strconv.Atoi(vals)
-			red += val
+			red += score
 		}
 		if color == "green" {
-			val, _ := strconv.Atoi(vals)
-			blue += val
+			blue += score
 		}
 		if color == "blue" {
-			val, _ := strconv.Atoi(vals)
-			green += val
+			green += score
 		}
 	}
 	return red, blue, green
 }
 
+func isRoundPossible(red, green, blue int) bool {
+	return red <= 12 && green <= 13 && blue <= 14
+}
+
 func part1() int {
 	sum := 0
-	for idx, line := range inputLines {
-		firstSpace := strings.Index(line, ": ")
-		gamesPart := line[firstSpace+2:]
+	for gameIdx, line := range inputLines {
+		gameContentStartIdx := strings.Index(line, ": ")
+		game := line[gameContentStartIdx+2:]
 
 		possible := false
-		days := gamesPart
 		eod := 0
 		for eod != -1 {
-			eod = strings.Index(days, "; ")
-			var currentDay string
+			eod = strings.Index(game, "; ")
+			var round string
 			if eod == -1 {
-				currentDay = days
+				round = game
 			} else {
-				currentDay = days[:eod]
-				days = days[eod+2:]
+				round = game[:eod]
+				game = game[eod+2:]
 			}
-			red, green, blue := processOneGame(currentDay)
-			if red <= 12 && green <= 13 && blue <= 14 {
+			red, green, blue := findScores(round)
+			if isRoundPossible(red, green, blue) {
 				possible = true
 			} else {
 				possible = false
@@ -92,7 +93,7 @@ func part1() int {
 			}
 		}
 		if possible {
-			sum += idx + 1
+			sum += gameIdx + 1
 		}
 	}
 	return sum
@@ -100,22 +101,21 @@ func part1() int {
 func part2() int {
 	sum := 0
 	for _, line := range inputLines {
-		firstSpace := strings.Index(line, ": ")
-		gamesPart := line[firstSpace+2:]
+		gameContentStartIdx := strings.Index(line, ": ")
+		game := line[gameContentStartIdx+2:]
 
-		days := gamesPart
 		eod := 0
 		var red, green, blue int
 		for eod != -1 {
-			eod = strings.Index(days, "; ")
-			var currentDay string
+			eod = strings.Index(game, "; ")
+			var round string
 			if eod == -1 {
-				currentDay = days
+				round = game
 			} else {
-				currentDay = days[:eod]
-				days = days[eod+2:]
+				round = game[:eod]
+				game = game[eod+2:]
 			}
-			redg, greeng, blueg := processOneGame(currentDay)
+			redg, greeng, blueg := findScores(round)
 			if redg > red {
 				red = redg
 			}
