@@ -37,37 +37,39 @@ func isSymbol(r byte) bool {
 	return r != '.' && !isNumber(r)
 }
 
-func part1() {
+func isOutBound(i, j int) bool {
+	return (i < 0 || i >= len(inputLines)) || (j < 0 || j >= len(inputLines[0]))
+}
+
+func part1() int {
 	sum := 0
 	for idx, line := range inputLines {
-		current := line + "."
 		inNumber := false
 		var startPos, endPos int
 		var found = false
-		for lineIdx := 0; lineIdx < len(current); lineIdx++ {
+		for lineIdx := 0; lineIdx < len(line); lineIdx++ {
 			// currently in number, don't care
-			if isNumber(current[lineIdx]) && inNumber {
+			if isNumber(line[lineIdx]) && inNumber {
 				continue
 			}
 			// currently out of number and not a number, don't care
-			if !isNumber(current[lineIdx]) && !inNumber {
+			if !isNumber(line[lineIdx]) && !inNumber {
 				continue
 			}
 
 			// reached the beginning of the number, care
-			if isNumber(current[lineIdx]) && !inNumber {
+			if isNumber(line[lineIdx]) && !inNumber {
 				inNumber = true
 				startPos = lineIdx
 				continue
 			}
 
 			// reached the end of number, check it
-			if !isNumber(current[lineIdx]) && inNumber {
+			if !isNumber(line[lineIdx]) && inNumber {
 				inNumber = false
 				endPos = lineIdx
 			}
-			// fmt.Println(startPos, endPos, currentLine[startPos:endPos])
-			num, err := strconv.Atoi(current[startPos:endPos])
+			num, err := strconv.Atoi(line[startPos:endPos])
 			if err != nil {
 				panic("strconv")
 			}
@@ -76,13 +78,9 @@ func part1() {
 			// num is startPos->endPos-1
 			for i := idx - 1; i <= idx+1; i++ {
 				for j := startPos - 1; j <= endPos; j++ {
-					if i < 0 || i >= len(inputLines) {
+					if isOutBound(i, j) {
 						continue
 					}
-					if j < 0 || j >= len(line) {
-						continue
-					}
-
 					if i == idx && (j <= endPos-1 && j >= startPos) {
 						continue
 					}
@@ -98,19 +96,16 @@ func part1() {
 			}
 			if found {
 				sum += num
-				fmt.Println("found", num)
-			} else {
-				fmt.Println("not found", num)
 			}
 			startPos, endPos = 0, 0
 			found = false
 		}
 
 	}
-	fmt.Println(sum)
+	return sum
 }
 
-func part2() {
+func part2() int {
 	positions := make(map[twod.Location][2]int)
 	numberIndex := 0
 	for idx, line := range inputLines {
@@ -139,7 +134,6 @@ func part2() {
 				inNumber = false
 				endPos = lineIdx
 			}
-			// fmt.Println(startPos, endPos, currentLine[startPos:endPos])
 			num, err := strconv.Atoi(current[startPos:endPos])
 			if err != nil {
 				panic("strconv")
@@ -152,7 +146,6 @@ func part2() {
 		}
 
 	}
-	fmt.Println(positions)
 	sum := 0
 	for i := 0; i < len(inputLines); i++ {
 		for j := 0; j < len(inputLines[i]); j++ {
@@ -167,18 +160,15 @@ func part2() {
 					}
 				}
 				if len(neighbours) == 2 {
-					fmt.Println(neighbours)
 					for _, n := range neighbours {
 						prod = prod * n
 					}
-					fmt.Println("prod", prod)
 					sum = sum + prod
 				}
 			}
 		}
 	}
-
-	fmt.Println(sum)
+	return sum
 }
 
 func main() {
@@ -192,6 +182,6 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	// part1()
-	part2()
+	fmt.Println(part1())
+	fmt.Println(part2())
 }
