@@ -71,6 +71,7 @@ fi
 
 mkdir "$DIR"
 touch "$DIR/main.go"
+touch "$DIR/main_test.go"
 touch "$DIR/statement.txt"
 touch "$DIR/input.txt"
 
@@ -85,4 +86,5 @@ fi
 
 # use your own template
 cp ../aocommon/template.go "$DIR/main.go"
+cp ../aocommon/template_benchmark.go "$DIR/main_test.go"
 echo $URL > "$DIR/statement.txt"

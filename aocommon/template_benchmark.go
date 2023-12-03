@@ -9,6 +9,8 @@ var ret int
 // system calls or allocations from calling scanner.Text(). It's also much
 // more convenient to write the benchmark code.
 
+// go test -run=XXX -bench=. -benchmem -count=10 main*.go > benchmarks/official.txt
+
 func BenchmarkPart1(b *testing.B) {
 	r := 0
 	for n := 0; n < b.N; n++ {
