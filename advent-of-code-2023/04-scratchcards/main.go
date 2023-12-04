@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/profile"
 )
 
 // This setup is done not because I like global variables, but in order to avoid
@@ -29,34 +31,75 @@ func readlines() []string {
 	return lines
 }
 
+func isDigit(d byte) bool {
+	return d >= '0' && d <= '9'
+}
+
+// allNumbersFromLine executes a function for all numbers from that line.
+// It is the generalized version of the function below, but adds a bit of
+// overhead by calling a function instead of assigning to a map directly.
+func allNumbersFromLine(line string, f func(n int)) {
+	innumber := false
+	start := 0
+	for i := 0; i < len(line); i++ {
+		if !innumber && isDigit(line[i]) {
+			innumber = true
+			start = i
+		}
+		if innumber && i == len(line)-1 {
+			num, _ := strconv.Atoi(line[start : i+1])
+			f(num)
+			return
+		} else if innumber && !isDigit(line[i]) {
+			num, _ := strconv.Atoi(line[start:i])
+			f(num)
+			innumber = false
+		}
+	}
+}
+
+// allNumbersFromLine executes a function for all numbers from that line.
+func allNumberFromLineToStruct(line string, all map[int]struct{}) {
+	innumber := false
+	start := 0
+	for i := 0; i < len(line); i++ {
+		if !innumber && isDigit(line[i]) {
+			innumber = true
+			start = i
+		}
+		if innumber && i == len(line)-1 {
+			num, _ := strconv.Atoi(line[start : i+1])
+			all[num] = struct{}{}
+			return
+		} else if innumber && !isDigit(line[i]) {
+			num, _ := strconv.Atoi(line[start:i])
+			all[num] = struct{}{}
+			innumber = false
+		}
+	}
+}
+
 func part1() int {
 
 	sum := 0
+
+	firstSet := make(map[int]struct{}, 16)
+	secondSet := make(map[int]struct{}, 32)
 	for _, line := range inputLines {
 		start := strings.Index(line, ":")
 		second := strings.Index(line, "|")
 
-		firstSetStr := line[start+2 : second-1]
-		secondSetStr := line[second+2:]
+		firstLine := line[start+2 : second-1]
+		secondLine := line[second+2:]
 
-		firstSet := make(map[int]struct{})
-		secondSet := make(map[int]struct{})
-
-		partsFirst := strings.Split(firstSetStr, " ")
-		partsSecond := strings.Split(secondSetStr, " ")
-
-		for _, part := range partsFirst {
-			num, err := strconv.Atoi(part)
-			if err == nil {
-				firstSet[num] = struct{}{}
-			}
-		}
-		for _, part := range partsSecond {
-			num, err := strconv.Atoi(part)
-			if err == nil {
-				secondSet[num] = struct{}{}
-			}
-		}
+		allNumbersFromLine(firstLine, func(n int) {
+			firstSet[n] = struct{}{}
+		})
+		allNumbersFromLine(secondLine, func(n int) {
+			secondSet[n] = struct{}{}
+		})
+		// allNumberFromLineToStruct(firstLine, firstSet)
+		// allNumberFromLineToStruct(secondLine, secondSet)
 
 		total := 0
 		for num := range firstSet {
@@ -69,17 +112,25 @@ func part1() int {
 			}
 		}
 		sum += total
+		clear(firstSet)
+		clear(secondSet)
 	}
 	return sum
 }
+
 func part2() int {
 
 	sum := 0
-	totalCopies := make(map[int]int)
+
+	// Otherwise it's hard to figure out how many copies each
+	// number has.
+	totalCopies := make(map[int]int, 256)
 
 	for i := 1; i <= len(inputLines); i++ {
 		totalCopies[i] = 1
 	}
+	firstSet := make(map[int]struct{}, 16)
+	secondSet := make(map[int]struct{}, 32)
 
 	totalCards := len(inputLines)
 	for idx, line := range inputLines {
@@ -87,27 +138,15 @@ func part2() int {
 		start := strings.Index(line, ":")
 		second := strings.Index(line, "|")
 
-		firstSetStr := line[start+2 : second-1]
-		secondSetStr := line[second+2:]
+		firstLine := line[start+2 : second-1]
+		secondLine := line[second+2:]
 
-		firstSet := make(map[int]struct{})
-		secondSet := make(map[int]struct{})
-
-		partsFirst := strings.Split(firstSetStr, " ")
-		partsSecond := strings.Split(secondSetStr, " ")
-
-		for _, part := range partsFirst {
-			num, err := strconv.Atoi(part)
-			if err == nil {
-				firstSet[num] = struct{}{}
-			}
-		}
-		for _, part := range partsSecond {
-			num, err := strconv.Atoi(part)
-			if err == nil {
-				secondSet[num] = struct{}{}
-			}
-		}
+		allNumbersFromLine(firstLine, func(n int) {
+			firstSet[n] = struct{}{}
+		})
+		allNumbersFromLine(secondLine, func(n int) {
+			secondSet[n] = struct{}{}
+		})
 
 		copies := 0
 		for num := range firstSet {
@@ -125,6 +164,8 @@ func part2() int {
 		for i := 1; i <= nextCardCopies; i++ {
 			totalCopies[idx+i] += totalCopies[idx]
 		}
+		clear(firstSet)
+		clear(secondSet)
 
 	}
 	for k := range totalCopies {
@@ -135,7 +176,7 @@ func part2() int {
 
 func main() {
 	// Run only 1 profile at a time!
-	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+	defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	// defer profile.Start(profile.MemProfile, profile.ProfilePath("."), profile.MemProfileRate(1)).Stop()
 
 	// No return value improves speed during contest, but make these functions
@@ -144,6 +185,10 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	fmt.Println(part1())
-	fmt.Println(part2())
+	r := 0
+	for i := 0; i < 10000; i++ {
+		r += part1() % 53
+	}
+	fmt.Println(r)
+	// fmt.Println(part2())
 }

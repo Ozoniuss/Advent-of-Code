@@ -1,0 +1,20 @@
+goos: windows
+goarch: amd64
+cpu: AMD Ryzen 7 5800H with Radeon Graphics         
+         │ benchmarks/official.txt │       benchmarks/improved.txt       │
+         │         sec/op          │   sec/op     vs base                │
+Part1-16               475.5µ ± 1%   235.0µ ± 1%  -50.57% (p=0.000 n=10)
+Part2-16               513.8µ ± 1%   266.1µ ± 0%  -48.22% (p=0.000 n=10)
+geomean                494.2µ        250.0µ       -49.41%
+
+         │ benchmarks/official.txt │       benchmarks/improved.txt        │
+         │          B/op           │     B/op      vs base                │
+Part1-16            396.858Ki ± 0%   5.719Ki ± 0%  -98.56% (p=0.000 n=10)
+Part2-16             407.28Ki ± 0%   15.77Ki ± 0%  -96.13% (p=0.000 n=10)
+geomean               402.0Ki        9.497Ki       -97.64%
+
+         │ benchmarks/official.txt │      benchmarks/improved.txt       │
+         │        allocs/op        │ allocs/op   vs base                │
+Part1-16               2536.0 ± 0%   200.0 ± 0%  -92.11% (p=0.000 n=10)
+Part2-16               2555.0 ± 0%   203.0 ± 0%  -92.05% (p=0.000 n=10)
+geomean                2.545k        201.5       -92.08%
