@@ -29,53 +29,50 @@ func readlines() []string {
 	return lines
 }
 
-// func part1() {
+func part1() int {
 
-// 	sum := 0
-// 	for _, line := range inputLines {
-// 		start := strings.Index(line, ":")
-// 		second := strings.Index(line, "|")
+	sum := 0
+	for _, line := range inputLines {
+		start := strings.Index(line, ":")
+		second := strings.Index(line, "|")
 
-// 		firstSetStr := line[start+2 : second-1]
-// 		secondSetStr := line[second+2:]
+		firstSetStr := line[start+2 : second-1]
+		secondSetStr := line[second+2:]
 
-// 		firstSet := make(map[int]struct{})
-// 		secondSet := make(map[int]struct{})
+		firstSet := make(map[int]struct{})
+		secondSet := make(map[int]struct{})
 
-// 		fmt.Println("f", firstSetStr)
-// 		fmt.Println("s", secondSetStr)
+		partsFirst := strings.Split(firstSetStr, " ")
+		partsSecond := strings.Split(secondSetStr, " ")
 
-// 		partsFirst := strings.Split(firstSetStr, " ")
-// 		partsSecond := strings.Split(secondSetStr, " ")
+		for _, part := range partsFirst {
+			num, err := strconv.Atoi(part)
+			if err == nil {
+				firstSet[num] = struct{}{}
+			}
+		}
+		for _, part := range partsSecond {
+			num, err := strconv.Atoi(part)
+			if err == nil {
+				secondSet[num] = struct{}{}
+			}
+		}
 
-// 		for _, part := range partsFirst {
-// 			num, err := strconv.Atoi(part)
-// 			if err == nil {
-// 				firstSet[num] = struct{}{}
-// 			}
-// 		}
-// 		for _, part := range partsSecond {
-// 			num, err := strconv.Atoi(part)
-// 			if err == nil {
-// 				secondSet[num] = struct{}{}
-// 			}
-// 		}
-
-//			total := 0
-//			for num := range firstSet {
-//				if _, ok := secondSet[num]; ok {
-//					if total == 0 {
-//						total = 1
-//					} else {
-//						total *= 2
-//					}
-//				}
-//			}
-//			sum += total
-//		}
-//		fmt.Println(sum)
-//	}
-func part1() {
+		total := 0
+		for num := range firstSet {
+			if _, ok := secondSet[num]; ok {
+				if total == 0 {
+					total = 1
+				} else {
+					total *= 2
+				}
+			}
+		}
+		sum += total
+	}
+	return sum
+}
+func part2() int {
 
 	sum := 0
 	totalCopies := make(map[int]int)
@@ -133,7 +130,7 @@ func part1() {
 	for k := range totalCopies {
 		sum += totalCopies[k]
 	}
-	fmt.Println(sum)
+	return sum
 }
 
 func main() {
@@ -147,6 +144,6 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	part1()
-	// part2()
+	fmt.Println(part1())
+	fmt.Println(part2())
 }
