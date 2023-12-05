@@ -39,27 +39,27 @@ func addRangeToArr(dest, source, length int, arr *[][3]int) {
 	(*arr) = append((*arr), [3]int{dest, source, length})
 }
 
-func findCorrespondentInArray(arr [][3]int, number int) int {
+func findCorrespondentInArray(arr *[][3]int, number int) int {
 	pos := 0
 
 	end := true
-	for i := 0; i < len(arr); i++ {
-		if arr[i][1] > number {
+	for i := 0; i < len(*arr); i++ {
+		if (*arr)[i][1] > number {
 			pos = i - 1
 			end = false
 			break
 		}
 	}
 	if end {
-		pos = len(arr) - 1
+		pos = len((*arr)) - 1
 	}
 	if pos == -1 {
 		return number
 	}
-	if number >= arr[pos][1]+arr[pos][2] {
+	if number >= (*arr)[pos][1]+(*arr)[pos][2] {
 		return number
 	}
-	return number - arr[pos][1] + arr[pos][0]
+	return number - (*arr)[pos][1] + (*arr)[pos][0]
 }
 
 func part1() int {
@@ -126,35 +126,19 @@ func part1() int {
 			currentArr = &humtoloc
 		}
 	}
-	sort.Slice(seedtosoil, func(i, j int) bool {
-		return seedtosoil[i][1] < seedtosoil[j][1]
-	})
-	sort.Slice(soiltofert, func(i, j int) bool {
-		return soiltofert[i][1] < soiltofert[j][1]
-	})
-	sort.Slice(ferttowater, func(i, j int) bool {
-		return ferttowater[i][1] < ferttowater[j][1]
-	})
-	sort.Slice(watertolight, func(i, j int) bool {
-		return watertolight[i][1] < watertolight[j][1]
-	})
-	sort.Slice(lighttotemp, func(i, j int) bool {
-		return lighttotemp[i][1] < lighttotemp[j][1]
-	})
-	sort.Slice(temptohum, func(i, j int) bool {
-		return temptohum[i][1] < temptohum[j][1]
-	})
-	sort.Slice(humtoloc, func(i, j int) bool {
-		return humtoloc[i][1] < humtoloc[j][1]
-	})
-	all := [][][3]int{
-		seedtosoil,
-		soiltofert,
-		ferttowater,
-		watertolight,
-		lighttotemp,
-		temptohum,
-		humtoloc,
+	all := []*[][3]int{
+		&seedtosoil,
+		&soiltofert,
+		&ferttowater,
+		&watertolight,
+		&lighttotemp,
+		&temptohum,
+		&humtoloc,
+	}
+	for _, a := range all {
+		sort.Slice((*a), func(i, j int) bool {
+			return (*a)[i][1] < (*a)[j][1]
+		})
 	}
 	lowest := math.MaxInt
 	for _, s := range seeds {
@@ -234,7 +218,7 @@ func part2() int {
 			currentArr = &humtoloc
 		}
 	}
-	var all []*[][3]int = []*[][3]int{
+	all := []*[][3]int{
 		&seedtosoil,
 		&soiltofert,
 		&ferttowater,
@@ -261,7 +245,7 @@ func part2() int {
 			for currentSeed := seed; currentSeed < seed+length; currentSeed++ {
 				curr := currentSeed
 				for _, a := range all {
-					curr = findCorrespondentInArray(*a, curr)
+					curr = findCorrespondentInArray(a, curr)
 				}
 				if curr < lowest {
 					lowestmtx.Lock()
@@ -272,7 +256,6 @@ func part2() int {
 			wg.Done()
 		}()
 	}
-
 	wg.Wait()
 
 	return lowest
