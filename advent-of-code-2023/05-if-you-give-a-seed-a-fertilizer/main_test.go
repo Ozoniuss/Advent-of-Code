@@ -19,6 +19,7 @@ func BenchmarkPart1(b *testing.B) {
 	ret = r
 }
 
+// For my original solution there's no point in even benchmarking.
 func BenchmarkPart2(b *testing.B) {
 	r := 0
 	for n := 0; n < b.N; n++ {
