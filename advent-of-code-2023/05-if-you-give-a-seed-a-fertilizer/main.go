@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 // This setup is done not because I like global variables, but in order to avoid
@@ -40,6 +41,7 @@ func addRangeToArr(dest, source, length int, arr *[][3]int) {
 
 func findCorrespondentInArray(arr [][3]int, number int) int {
 	pos := 0
+
 	end := true
 	for i := 0; i < len(arr); i++ {
 		if arr[i][1] > number {
@@ -60,8 +62,7 @@ func findCorrespondentInArray(arr [][3]int, number int) int {
 	return number - arr[pos][1] + arr[pos][0]
 }
 
-// Took a few minutes to run
-func part2() {
+func part1() int {
 	var seeds []int
 	var seedtosoil = make([][3]int, 0, 100)
 	var soiltofert = make([][3]int, 0, 100)
@@ -96,7 +97,6 @@ func part2() {
 		}
 
 		if line == "seed-to-soil map:" {
-			fmt.Println("here")
 			inmap = true
 			currentArr = &seedtosoil
 		}
@@ -147,7 +147,6 @@ func part2() {
 	sort.Slice(humtoloc, func(i, j int) bool {
 		return humtoloc[i][1] < humtoloc[j][1]
 	})
-	fmt.Println(seeds)
 	all := [][][3]int{
 		seedtosoil,
 		soiltofert,
@@ -157,27 +156,21 @@ func part2() {
 		temptohum,
 		humtoloc,
 	}
-	// fmt.Println(all)
 	lowest := math.MaxInt
-	for i := 0; i < len(seeds); i += 2 {
-		seed := seeds[i]
-		length := seeds[i+1]
-		fmt.Println(i)
-		for currentSeed := seed; currentSeed < seed+length; currentSeed++ {
-			curr := currentSeed
-			for _, a := range all {
-				curr = findCorrespondentInArray(a, curr)
-			}
-			if curr < lowest {
-				lowest = curr
-			}
+	for _, s := range seeds {
+		curr := s
+		for _, a := range all {
+			curr = findCorrespondentInArray(a, curr)
+		}
+		if curr < lowest {
+			lowest = curr
 		}
 	}
-
-	fmt.Println(lowest)
+	return lowest
 }
 
-func part1() {
+// Took a few minutes to run
+func part2() int {
 	var seeds []int
 	var seedtosoil = make([][3]int, 0, 100)
 	var soiltofert = make([][3]int, 0, 100)
@@ -212,7 +205,6 @@ func part1() {
 		}
 
 		if line == "seed-to-soil map:" {
-			fmt.Println("here")
 			inmap = true
 			currentArr = &seedtosoil
 		}
@@ -242,28 +234,48 @@ func part1() {
 			currentArr = &humtoloc
 		}
 	}
-	fmt.Println(seeds)
-	all := [][][3]int{
-		seedtosoil,
-		soiltofert,
-		ferttowater,
-		watertolight,
-		lighttotemp,
-		temptohum,
-		humtoloc,
+	var all []*[][3]int = []*[][3]int{
+		&seedtosoil,
+		&soiltofert,
+		&ferttowater,
+		&watertolight,
+		&lighttotemp,
+		&temptohum,
+		&humtoloc,
 	}
-	// fmt.Println(all)
+	for _, arr := range all {
+		sort.Slice((*arr), func(i, j int) bool {
+			return (*arr)[i][1] < (*arr)[j][1]
+		})
+	}
 	lowest := math.MaxInt
-	for _, s := range seeds {
-		curr := s
-		for _, a := range all {
-			curr = findCorrespondentInArray(a, curr)
-		}
-		if curr < lowest {
-			lowest = curr
-		}
+	lowestmtx := &sync.Mutex{}
+	wg := &sync.WaitGroup{}
+	wg.Add(len(seeds) / 2)
+	for i := 0; i < len(seeds); i += 2 {
+		i := i
+		go func() {
+			seed := seeds[i]
+			length := seeds[i+1]
+			fmt.Println(i)
+			for currentSeed := seed; currentSeed < seed+length; currentSeed++ {
+				curr := currentSeed
+				for _, a := range all {
+					curr = findCorrespondentInArray(*a, curr)
+				}
+				if curr < lowest {
+					lowestmtx.Lock()
+					lowest = curr
+					lowestmtx.Unlock()
+				}
+			}
+			wg.Done()
+		}()
 	}
-	fmt.Println(lowest)
+
+	wg.Wait()
+
+	return lowest
 }
 
 func main() {
@@ -277,6 +289,6 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	part1()
-	part2()
+	fmt.Println(part1())
+	fmt.Println(part2())
 }
