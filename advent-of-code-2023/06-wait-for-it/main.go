@@ -70,32 +70,37 @@ func getInputMerged() (int, int) {
 var inputTimes, inputDistances = getInput()
 var inputBigTime, inputBigDistance = getInputMerged()
 
+// findFromLeftAndRight attempts to optimize the problem given the nature of
+// a second-degree polynomial. The first root is time=0 and the second root
+// is time=distance.
+func findFromLeftAndRight(time int, distance int) int {
+	var left, right int
+	for i := 0; i < time; i++ {
+		if i*(time-i) > distance {
+			left = i
+			break
+		}
+	}
+	for j := time - 1; j >= 0; j-- {
+		if j*(time-j) > distance {
+			right = j
+			break
+		}
+	}
+	return right - left + 1
+}
+
 func part1(times, distances []int) int {
 	count := 1
 	for round := 0; round < len(inputTimes); round++ {
-		roundCnt := 0
-		for i := 0; i <= times[round]; i++ {
-			totalDistance := (i) * (times[round] - i)
-			if totalDistance > distances[round] {
-				roundCnt++
-			}
-		}
+		roundCnt := findFromLeftAndRight(times[round], distances[round])
 		count *= roundCnt
 	}
 	return count
 }
 
 func part2(time, distance int) int {
-
-	roundCnt := 0
-	for i := 0; i <= time; i++ {
-		totalDistance := (i) * (time - i)
-		if totalDistance > distance {
-			roundCnt++
-		}
-	}
-
-	return roundCnt
+	return findFromLeftAndRight(time, distance)
 }
 
 func main() {
