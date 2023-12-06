@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -17,7 +18,7 @@ var inputLines = readlines()
 func readlines() []string {
 
 	// input was processed manually
-	f, err := os.Open("processed.txt")
+	f, err := os.Open("input.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -31,58 +32,47 @@ func readlines() []string {
 	return lines
 }
 
-func part1() {
-	timesStr := inputLines[0]
-	distancesStr := inputLines[1]
+func getInput() ([]int, []int) {
 
-	times := make([]int, 0, 4)
-	for _, timestr := range strings.Split(timesStr, " ") {
-		time, _ := strconv.Atoi(timestr)
-		times = append(times, time)
+	r := regexp.MustCompile("[0-9]+")
+	allTimes := r.FindAllString(inputLines[0], -1)
+	allDistances := r.FindAllString(inputLines[1], -1)
+
+	times := make([]int, len(allTimes))
+	distances := make([]int, len(allDistances))
+
+	for i := 0; i < len(times); i++ {
+		time, _ := strconv.Atoi(allTimes[i])
+		distance, _ := strconv.Atoi(allDistances[i])
+
+		times[i] = time
+		distances[i] = distance
 	}
 
-	distances := make([]int, 0, 4)
-	for _, distancestr := range strings.Split(distancesStr, " ") {
-		distance, _ := strconv.Atoi(distancestr)
-		distances = append(distances, distance)
-	}
-
-	fmt.Println(times, distances)
-	count := 1
-	for round := 0; round < len(times); round++ {
-		roundCnt := 0
-		for i := 0; i <= times[round]; i++ {
-			totalDistance := (i) * (times[round] - i)
-			if round == 0 {
-				fmt.Println(totalDistance)
-			}
-			if totalDistance > distances[round] {
-				roundCnt++
-			}
-		}
-		count *= roundCnt
-	}
-	fmt.Println(count)
+	return times, distances
 }
-func part1() {
-	timesStr := inputLines[0]
-	distancesStr := inputLines[1]
 
-	times := make([]int, 0, 4)
-	for _, timestr := range strings.Split(timesStr, " ") {
-		time, _ := strconv.Atoi(timestr)
-		times = append(times, time)
-	}
+func getInputMerged() (int, int) {
 
-	distances := make([]int, 0, 4)
-	for _, distancestr := range strings.Split(distancesStr, " ") {
-		distance, _ := strconv.Atoi(distancestr)
-		distances = append(distances, distance)
-	}
+	r := regexp.MustCompile("[0-9]+")
+	allTimes := r.FindAllString(inputLines[0], -1)
+	allDistances := r.FindAllString(inputLines[1], -1)
 
-	fmt.Println(times, distances)
+	bigTime := strings.Join(allTimes, "")
+	bigDistances := strings.Join(allDistances, "")
+
+	time, _ := strconv.Atoi(bigTime)
+	distance, _ := strconv.Atoi(bigDistances)
+
+	return time, distance
+}
+
+var inputTimes, inputDistances = getInput()
+var inputBigTime, inputBigDistance = getInputMerged()
+
+func part1(times, distances []int) int {
 	count := 1
-	for round := 0; round < len(times); round++ {
+	for round := 0; round < len(inputTimes); round++ {
 		roundCnt := 0
 		for i := 0; i <= times[round]; i++ {
 			totalDistance := (i) * (times[round] - i)
@@ -92,7 +82,20 @@ func part1() {
 		}
 		count *= roundCnt
 	}
-	fmt.Println(count)
+	return count
+}
+
+func part2(time, distance int) int {
+
+	roundCnt := 0
+	for i := 0; i <= time; i++ {
+		totalDistance := (i) * (time - i)
+		if totalDistance > distance {
+			roundCnt++
+		}
+	}
+
+	return roundCnt
 }
 
 func main() {
@@ -106,6 +109,6 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	part1()
-	// part2()
+	fmt.Println(part1(inputTimes, inputDistances))
+	fmt.Println(part2(inputBigTime, inputBigDistance))
 }

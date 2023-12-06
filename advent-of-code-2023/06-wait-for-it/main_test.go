@@ -14,7 +14,7 @@ var ret int
 func BenchmarkPart1(b *testing.B) {
 	r := 0
 	for n := 0; n < b.N; n++ {
-		r = part1()
+		r = part1(inputTimes, inputDistances)
 	}
 	ret = r
 }
@@ -22,7 +22,7 @@ func BenchmarkPart1(b *testing.B) {
 func BenchmarkPart2(b *testing.B) {
 	r := 0
 	for n := 0; n < b.N; n++ {
-		r = part2()
+		r = part2(inputBigTime, inputBigDistance)
 	}
 	ret = r
 }

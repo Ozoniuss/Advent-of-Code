@@ -1,0 +1,25 @@
+goos: windows
+goarch: amd64
+cpu: AMD Ryzen 7 5800H with Radeon Graphics         
+BenchmarkPart1-16    	 5491965	       217.4 ns/op
+BenchmarkPart1-16    	 5543284	       215.3 ns/op
+BenchmarkPart1-16    	 5465869	       219.9 ns/op
+BenchmarkPart1-16    	 5298297	       216.1 ns/op
+BenchmarkPart1-16    	 5604708	       217.7 ns/op
+BenchmarkPart1-16    	 5480697	       222.3 ns/op
+BenchmarkPart1-16    	 5487324	       219.8 ns/op
+BenchmarkPart1-16    	 5466850	       218.4 ns/op
+BenchmarkPart1-16    	 5470117	       218.0 ns/op
+BenchmarkPart1-16    	 5529438	       218.2 ns/op
+BenchmarkPart2-16    	      43	  29330533 ns/op
+BenchmarkPart2-16    	      38	  30134021 ns/op
+BenchmarkPart2-16    	      40	  29354588 ns/op
+BenchmarkPart2-16    	      40	  29544800 ns/op
+BenchmarkPart2-16    	      38	  29457697 ns/op
+BenchmarkPart2-16    	      42	  29403779 ns/op
+BenchmarkPart2-16    	      38	  29107142 ns/op
+BenchmarkPart2-16    	      40	  29162182 ns/op
+BenchmarkPart2-16    	      40	  28907642 ns/op
+BenchmarkPart2-16    	      39	  29194182 ns/op
+PASS
+ok  	command-line-arguments	26.318s
