@@ -37,22 +37,22 @@ type handWithScore struct {
 	score int
 }
 
-//	var orderMap = map[byte]int{
-//		'A': 14,
-//		'K': 13,
-//		'Q': 12,
-//		'J': 11,
-//		'T': 10,
-//		'9': 9,
-//		'8': 8,
-//		'7': 7,
-//		'6': 6,
-//		'5': 5,
-//		'4': 4,
-//		'3': 3,
-//		'2': 2,
-//	}
 var orderMap = map[byte]int{
+	'A': 14,
+	'K': 13,
+	'Q': 12,
+	'J': 11,
+	'T': 10,
+	'9': 9,
+	'8': 8,
+	'7': 7,
+	'6': 6,
+	'5': 5,
+	'4': 4,
+	'3': 3,
+	'2': 2,
+}
+var orderMapWildcards = map[byte]int{
 	'A': 14,
 	'K': 13,
 	'Q': 12,
@@ -118,14 +118,6 @@ func processHand(hand string) [7]int {
 	if len(cards) == 5 {
 		ret[6]++
 	}
-	// highest card, set to biggest value for comparisons
-	// max := 0
-	// for k := range cards {
-	// 	if orderMap[k] > max {
-	// 		max = orderMap[k]
-	// 	}
-	// }
-	// ret[6] = max
 	return ret
 }
 
@@ -166,7 +158,7 @@ func completeToBestPair(card string) string {
 	return out.String()
 }
 
-func compareCards(card1, card2 string) int {
+func compareCardsWithWildcard(card1, card2 string) int {
 
 	card1changed := completeToBestPair(card1)
 	card2changed := completeToBestPair(card2)
@@ -184,7 +176,32 @@ func compareCards(card1, card2 string) int {
 			break
 		}
 	}
-	fmt.Println(ret1, ret2, card1, card2)
+	for i := 0; i < len(card1); i++ {
+		if orderMapWildcards[card1[i]] > orderMapWildcards[card2[i]] {
+			return 1
+		}
+		if orderMapWildcards[card1[i]] < orderMapWildcards[card2[i]] {
+			return -1
+		}
+	}
+	return 0
+}
+
+func compareCards(card1, card2 string) int {
+	ret1 := processHand(card1)
+	ret2 := processHand(card2)
+
+	for i := 0; i < len(ret1); i++ {
+		if ret1[i] > ret2[i] {
+			return 1
+		}
+		if ret1[i] < ret2[i] {
+			return -1
+		}
+		if ret1[i] == ret2[i] && ret1[i] == 1 {
+			break
+		}
+	}
 	for i := 0; i < len(card1); i++ {
 		if orderMap[card1[i]] > orderMap[card2[i]] {
 			return 1
@@ -196,34 +213,7 @@ func compareCards(card1, card2 string) int {
 	return 0
 }
 
-// func compareCards(card1, card2 string) int {
-// 	ret1 := processHand(card1)
-// 	ret2 := processHand(card2)
-
-// 	for i := 0; i < len(ret1); i++ {
-// 		if ret1[i] > ret2[i] {
-// 			return 1
-// 		}
-// 		if ret1[i] < ret2[i] {
-// 			return -1
-// 		}
-// 		if ret1[i] == ret2[i] && ret1[i] == 1 {
-// 			break
-// 		}
-// 	}
-// 	fmt.Println(ret1, ret2, card1, card2)
-// 	for i := 0; i < len(card1); i++ {
-// 		if orderMap[card1[i]] > orderMap[card2[i]] {
-// 			return 1
-// 		}
-// 		if orderMap[card1[i]] < orderMap[card2[i]] {
-// 			return -1
-// 		}
-// 	}
-// 	return 0
-// }
-
-func part1() {
+func part1() int {
 	hands := make([]handWithScore, 0, 100)
 	for _, line := range inputLines {
 		parts := strings.Split(line, " ")
@@ -241,29 +231,29 @@ func part1() {
 	for i := 1; i <= len(hands); i++ {
 		ttl += i * hands[i-1].score
 	}
-	fmt.Println(ttl)
+	return ttl
 }
 
-// func part1() {
-// 	hands := make([]handWithScore, 0, 100)
-// 	for _, line := range inputLines {
-// 		parts := strings.Split(line, " ")
-// 		hand := parts[0]
-// 		score, _ := strconv.Atoi(parts[1])
-// 		hands = append(hands, handWithScore{
-// 			hand:  hand,
-// 			score: score,
-// 		})
-// 	}
-// 	slices.SortFunc[[]handWithScore](hands, func(a, b handWithScore) int {
-// 		return compareCards(a.hand, b.hand)
-// 	})
-// 	ttl := 0
-// 	for i := 1; i <= len(hands); i++ {
-// 		ttl += i * hands[i-1].score
-// 	}
-// 	fmt.Println(ttl)
-// }
+func part2() int {
+	hands := make([]handWithScore, 0, 100)
+	for _, line := range inputLines {
+		parts := strings.Split(line, " ")
+		hand := parts[0]
+		score, _ := strconv.Atoi(parts[1])
+		hands = append(hands, handWithScore{
+			hand:  hand,
+			score: score,
+		})
+	}
+	slices.SortFunc[[]handWithScore](hands, func(a, b handWithScore) int {
+		return compareCardsWithWildcard(a.hand, b.hand)
+	})
+	ttl := 0
+	for i := 1; i <= len(hands); i++ {
+		ttl += i * hands[i-1].score
+	}
+	return ttl
+}
 
 func main() {
 	// Run only 1 profile at a time!
@@ -276,6 +266,6 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	part1()
-	// part2()
+	fmt.Println(part1())
+	fmt.Println(part2())
 }
