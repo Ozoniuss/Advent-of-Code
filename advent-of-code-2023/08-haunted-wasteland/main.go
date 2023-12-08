@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aoc/golib/maths"
 	"bufio"
 	"fmt"
 	"os"
@@ -26,20 +27,28 @@ func readlines() []string {
 	}
 	return lines
 }
-func part1() {
+
+// Doesn't really reduce allocations because maps are allocated on the heap
+// anyways since they are big. But, it does reduce overall memory usage.
+type node [3]byte
+
+var AAA = node{'A', 'A', 'A'}
+var ZZZ = node{'Z', 'Z', 'Z'}
+
+func part1() int {
 	directions := inputLines[0]
-	nodesstr := inputLines[2:]
 
-	locations := make(map[string][2]string)
+	locations := make(map[node][2]node, 1024)
 
-	for _, line := range nodesstr {
-		start := line[0:3]
-		left := line[7:10]
-		right := line[12:15]
+	for _, line := range inputLines[2:] {
+		var start, left, right [3]byte
+		copy(start[:], line[0:3])
+		copy(left[:], line[7:10])
+		copy(right[:], line[12:15])
 
-		locations[start] = [2]string{left, right}
+		locations[start] = [2]node{left, right}
 	}
-	current := "AAA"
+	current := [3]byte{'A', 'A', 'A'}
 
 	start := -1
 	count := 0
@@ -53,27 +62,27 @@ func part1() {
 		} else {
 			current = locations[current][1]
 		}
-		if current == "ZZZ" {
+		if current == ZZZ {
 			break
 		}
 	}
-	fmt.Println(count)
+	return count
 }
 
-func part2() {
+func part2() int {
 	directions := inputLines[0]
-	nodesstr := inputLines[2:]
 
-	locations := make(map[string][2]string)
+	locations := make(map[node][2]node, 1024)
 
-	for _, line := range nodesstr {
-		start := line[0:3]
-		left := line[7:10]
-		right := line[12:15]
+	for _, line := range inputLines[2:] {
+		var start, left, right [3]byte
+		copy(start[:], line[0:3])
+		copy(left[:], line[7:10])
+		copy(right[:], line[12:15])
 
-		locations[start] = [2]string{left, right}
+		locations[start] = [2]node{left, right}
 	}
-	currents := []string{}
+	currents := []node{}
 
 	for k := range locations {
 		if k[2] == 'A' {
@@ -104,8 +113,7 @@ func part2() {
 		count = 0
 	}
 
-	// compute LCM of this
-	fmt.Println(rotations)
+	return maths.LCM(rotations...)
 }
 
 func main() {
@@ -119,6 +127,6 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	part1()
-	part2()
+	fmt.Println(part1())
+	fmt.Println(part2())
 }
