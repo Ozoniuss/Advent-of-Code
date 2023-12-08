@@ -5,6 +5,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sync"
+
+	"github.com/pkg/profile"
 )
 
 // This setup is done not because I like global variables, but in order to avoid
@@ -90,35 +93,42 @@ func part2() int {
 		}
 	}
 
-	start := -1
-	count := 0
 	rotations := make([]int, len(currents))
+	rotationsmtx := &sync.Mutex{}
+	wg := &sync.WaitGroup{}
+	wg.Add(len(currents))
 	for i := 0; i < len(currents); i++ {
-		for {
+		start := -1
+		count := 0
+		go func(i, start, count int) {
+			for {
 
-			start++
-			start = start % len(directions)
-			count++
+				start++
+				start = start % len(directions)
+				count++
 
-			if directions[start] == 'L' {
-				currents[i] = locations[currents[i]][0]
-			} else {
-				currents[i] = locations[currents[i]][1]
+				if directions[start] == 'L' {
+					currents[i] = locations[currents[i]][0]
+				} else {
+					currents[i] = locations[currents[i]][1]
+				}
+				if currents[i][2] == 'Z' {
+					break
+				}
 			}
-			if currents[i][2] == 'Z' {
-				break
-			}
-		}
-		rotations[i] = count
-		count = 0
+			rotationsmtx.Lock()
+			rotations[i] = count
+			rotationsmtx.Unlock()
+			wg.Done()
+		}(i, start, count)
 	}
-
+	wg.Wait()
 	return maths.LCM(rotations...)
 }
 
 func main() {
 	// Run only 1 profile at a time!
-	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+	defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	// defer profile.Start(profile.MemProfile, profile.ProfilePath("."), profile.MemProfileRate(1)).Stop()
 
 	// No return value improves speed during contest, but make these functions
