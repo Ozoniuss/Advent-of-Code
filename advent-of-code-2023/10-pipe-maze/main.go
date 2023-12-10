@@ -95,38 +95,35 @@ func next(b Board, current twod.Location) []twod.Location {
 	return nil
 }
 
-func findCycle(b Board, o twod.Location) []twod.Location {
+func findCyclicRoad(b Board, o twod.Location) []twod.Location {
 	road := make([]twod.Location, 0, 100)
 	road = append(road, o)
 	visited := make(map[twod.Location]struct{})
 	current := o
 	visited[o] = struct{}{}
 	for _, nextLocation := range next(b, current) {
-		roadCopy := slices.Clone(road)
-		roadCopy = append(roadCopy, nextLocation)
-		finalRoad := dfs(b, nextLocation, roadCopy, visited)
-		if finalRoad == nil {
+		road = append(road, nextLocation)
+		finalRoad := dfsRoad(b, nextLocation, &road, visited)
+		if !finalRoad {
+			road = road[:len(road)-1]
 			continue
 		} else {
-			return finalRoad
+			return road
 		}
 	}
 	panic("no cycle detected from start")
 }
 
-func dfs(b Board, current twod.Location, road []twod.Location, visited map[twod.Location]struct{}) []twod.Location {
+func dfsRoad(b Board, current twod.Location, road *[]twod.Location, visited map[twod.Location]struct{}) bool {
 	if b[current] == 'S' {
-		if len(road) == 3 {
-			return nil
-		}
-		return road
+		return len(*road) != 3
 	}
 	visited[current] = struct{}{}
 	for _, nextLocation := range next(b, current) {
 
 		// The next vertex we add is already in the road, which means we found
 		// a cycle.
-		if slices.Contains(road, nextLocation) && b[nextLocation] != 'S' {
+		if slices.Contains(*road, nextLocation) && b[nextLocation] != 'S' {
 			continue
 		}
 
@@ -137,24 +134,24 @@ func dfs(b Board, current twod.Location, road []twod.Location, visited map[twod.
 
 			continue
 		}
-		roadCopy := slices.Clone(road)
-		roadCopy = append(roadCopy, nextLocation)
-		wholeRoad := dfs(b, nextLocation, roadCopy, visited)
+		(*road) = append((*road), nextLocation)
+		foundCycle := dfsRoad(b, nextLocation, road, visited)
 		// check next neighbours
-		if wholeRoad == nil {
+		if !foundCycle {
+			(*road) = (*road)[:len(*road)-1]
 			continue
 		} else {
-			return wholeRoad
+			return true
 		}
-		// return dfs(b, nextLocation, roadCopy, visited)
+		// remove last element
 	}
-	return nil
+	return false
 }
 
 func part1() int {
 	origin, brd := readlines()
 
-	road := findCycle(brd, origin)
+	road := findCyclicRoad(brd, origin)
 	return len(road) / 2
 }
 
@@ -170,7 +167,7 @@ const (
 func part2(missingPiece byte) int {
 	origin, brd := readlines()
 
-	road := findCycle(brd, origin)
+	road := findCyclicRoad(brd, origin)
 	roadmap := make(map[twod.Location]struct{})
 	for _, tile := range road {
 		roadmap[tile] = struct{}{}

@@ -1,0 +1,25 @@
+goos: windows
+goarch: amd64
+cpu: AMD Ryzen 7 5800H with Radeon Graphics         
+BenchmarkPart1-16    	      20	  78920760 ns/op	 5388694 B/op	   14240 allocs/op
+BenchmarkPart1-16    	      20	  77291630 ns/op	 5389456 B/op	   14244 allocs/op
+BenchmarkPart1-16    	      20	  77610985 ns/op	 5390082 B/op	   14249 allocs/op
+BenchmarkPart1-16    	      20	  77375490 ns/op	 5388129 B/op	   14236 allocs/op
+BenchmarkPart1-16    	      20	  77289180 ns/op	 5389144 B/op	   14243 allocs/op
+BenchmarkPart1-16    	      20	  77823330 ns/op	 5388896 B/op	   14242 allocs/op
+BenchmarkPart1-16    	      20	  77283660 ns/op	 5389357 B/op	   14246 allocs/op
+BenchmarkPart1-16    	      20	  77350380 ns/op	 5388648 B/op	   14240 allocs/op
+BenchmarkPart1-16    	      20	  77598945 ns/op	 5390436 B/op	   14252 allocs/op
+BenchmarkPart1-16    	      20	  77435340 ns/op	 5390311 B/op	   14251 allocs/op
+BenchmarkPart2-16    	      20	  80216235 ns/op	 6715893 B/op	   14547 allocs/op
+BenchmarkPart2-16    	      20	  80632840 ns/op	 6718026 B/op	   14562 allocs/op
+BenchmarkPart2-16    	      20	  79980975 ns/op	 6716732 B/op	   14553 allocs/op
+BenchmarkPart2-16    	      20	  80221885 ns/op	 6716228 B/op	   14550 allocs/op
+BenchmarkPart2-16    	      20	  80446115 ns/op	 6715188 B/op	   14542 allocs/op
+BenchmarkPart2-16    	      20	  80618350 ns/op	 6715568 B/op	   14544 allocs/op
+BenchmarkPart2-16    	      20	  81082800 ns/op	 6718505 B/op	   14564 allocs/op
+BenchmarkPart2-16    	      20	  80494170 ns/op	 6715857 B/op	   14548 allocs/op
+BenchmarkPart2-16    	      20	  80465825 ns/op	 6716714 B/op	   14553 allocs/op
+BenchmarkPart2-16    	      20	  80700685 ns/op	 6717677 B/op	   14560 allocs/op
+PASS
+ok  	command-line-arguments	33.332s
