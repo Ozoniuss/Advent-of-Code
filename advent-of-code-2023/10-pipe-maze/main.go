@@ -5,7 +5,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"slices"
 )
 
 // This setup is done not because I like global variables, but in order to avoid
@@ -98,14 +97,21 @@ func next(b Board, current twod.Location) []twod.Location {
 func findCyclicRoad(b Board, o twod.Location) []twod.Location {
 	road := make([]twod.Location, 0, 100)
 	road = append(road, o)
+	roadmap := make(map[twod.Location]struct{})
+
 	visited := make(map[twod.Location]struct{})
+
 	current := o
 	visited[o] = struct{}{}
 	for _, nextLocation := range next(b, current) {
+
 		road = append(road, nextLocation)
-		finalRoad := dfsRoad(b, nextLocation, &road, visited)
+		roadmap[nextLocation] = struct{}{}
+
+		finalRoad := dfsRoad(b, nextLocation, &road, &roadmap, visited)
 		if !finalRoad {
 			road = road[:len(road)-1]
+			delete(roadmap, nextLocation)
 			continue
 		} else {
 			return road
@@ -114,7 +120,7 @@ func findCyclicRoad(b Board, o twod.Location) []twod.Location {
 	panic("no cycle detected from start")
 }
 
-func dfsRoad(b Board, current twod.Location, road *[]twod.Location, visited map[twod.Location]struct{}) bool {
+func dfsRoad(b Board, current twod.Location, road *[]twod.Location, roadmap *map[twod.Location]struct{}, visited map[twod.Location]struct{}) bool {
 	if b[current] == 'S' {
 		return len(*road) != 3
 	}
@@ -123,7 +129,11 @@ func dfsRoad(b Board, current twod.Location, road *[]twod.Location, visited map[
 
 		// The next vertex we add is already in the road, which means we found
 		// a cycle.
-		if slices.Contains(*road, nextLocation) && b[nextLocation] != 'S' {
+		// if slices.Contains(*road, nextLocation) && b[nextLocation] != 'S' {
+		// 	continue
+		// }
+		_, ok := (*roadmap)[nextLocation]
+		if b[nextLocation] != 'S' && ok {
 			continue
 		}
 
@@ -135,10 +145,11 @@ func dfsRoad(b Board, current twod.Location, road *[]twod.Location, visited map[
 			continue
 		}
 		(*road) = append((*road), nextLocation)
-		foundCycle := dfsRoad(b, nextLocation, road, visited)
+		foundCycle := dfsRoad(b, nextLocation, road, roadmap, visited)
 		// check next neighbours
 		if !foundCycle {
 			(*road) = (*road)[:len(*road)-1]
+			delete(*roadmap, nextLocation)
 			continue
 		} else {
 			return true
