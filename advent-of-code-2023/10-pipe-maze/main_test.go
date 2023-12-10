@@ -22,7 +22,7 @@ func BenchmarkPart1(b *testing.B) {
 func BenchmarkPart2(b *testing.B) {
 	r := 0
 	for n := 0; n < b.N; n++ {
-		r = part2()
+		r = part2('J')
 	}
 	ret = r
 }

@@ -14,15 +14,15 @@ import (
 // allocates, even if reusing the variable for the line.
 // var inputLines = readlines()
 
-type gameboard map[twod.Location]byte
+type Board map[twod.Location]byte
 
-func readlines() (twod.Location, gameboard) {
+func readlines() (twod.Location, Board) {
 	f, err := os.Open("input.txt")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
-	board := make(gameboard)
+	board := make(Board)
 
 	s := bufio.NewScanner(f)
 	i := 0
@@ -40,7 +40,11 @@ func readlines() (twod.Location, gameboard) {
 	return origin, board
 }
 
-func next(b gameboard, current twod.Location) []twod.Location {
+// Not defining consts for the tiles because it's easier to visualize this
+// way.
+
+// next returns a tile that could potentially continue the current road.
+func next(b Board, current twod.Location) []twod.Location {
 	nextLocations := make([]twod.Location, 0, 8)
 	if b[current] == '.' {
 		return nil
@@ -70,22 +74,28 @@ func next(b gameboard, current twod.Location) []twod.Location {
 		return nextLocations
 	}
 	if b[current] == 'S' {
-		// CHEATING
-		// nextLocations = append(nextLocations, twod.Move(current, twod.DOWN), twod.Move(current, twod.RIGHT))
-		// return nextLocations
-		nextLocations = append(nextLocations, twod.Move(current, twod.UP), twod.Move(current, twod.LEFT))
+		uptile := twod.Move(current, twod.UP)
+		downtile := twod.Move(current, twod.DOWN)
+		lefttile := twod.Move(current, twod.LEFT)
+		righttile := twod.Move(current, twod.RIGHT)
+		if b[uptile] == '|' || b[uptile] == 'F' || b[uptile] == '7' {
+			nextLocations = append(nextLocations, uptile)
+		}
+		if b[downtile] == '|' || b[downtile] == 'J' || b[downtile] == 'L' {
+			nextLocations = append(nextLocations, downtile)
+		}
+		if b[lefttile] == '-' || b[lefttile] == 'F' || b[lefttile] == 'L' {
+			nextLocations = append(nextLocations, lefttile)
+		}
+		if b[righttile] == '-' || b[righttile] == 'J' || b[righttile] == '7' {
+			nextLocations = append(nextLocations, righttile)
+		}
 		return nextLocations
-		// for _, d := range []twod.Direction{twod.UP, twod.DOWN, twod.LEFT, twod.RIGHT} {
-		// 	if p := twod.Move(current, d); b[p] != '.' {
-		// 		nextLocations = append(nextLocations, p)
-		// 	}
-		// }
-		// return nextLocations
 	}
 	return nil
 }
 
-func findCycle(b gameboard, o twod.Location) []twod.Location {
+func findCycle(b Board, o twod.Location) []twod.Location {
 	road := make([]twod.Location, 0, 100)
 	road = append(road, o)
 	visited := make(map[twod.Location]struct{})
@@ -101,13 +111,12 @@ func findCycle(b gameboard, o twod.Location) []twod.Location {
 			return finalRoad
 		}
 	}
-	panic("shouldntve happended")
+	panic("no cycle detected from start")
 }
 
-func dfs(b gameboard, current twod.Location, road []twod.Location, visited map[twod.Location]struct{}) []twod.Location {
+func dfs(b Board, current twod.Location, road []twod.Location, visited map[twod.Location]struct{}) []twod.Location {
 	if b[current] == 'S' {
 		if len(road) == 3 {
-			fmt.Println("here")
 			return nil
 		}
 		return road
@@ -142,14 +151,11 @@ func dfs(b gameboard, current twod.Location, road []twod.Location, visited map[t
 	return nil
 }
 
-func part1() {
+func part1() int {
 	origin, brd := readlines()
-	fmt.Println(origin)
 
 	road := findCycle(brd, origin)
-	fmt.Println(len(road) / 2)
-
-	// fmt.Println(maxsteps)
+	return len(road) / 2
 }
 
 const (
@@ -161,7 +167,7 @@ const (
 	IN      = "IN"
 )
 
-func part2() {
+func part2(missingPiece byte) int {
 	origin, brd := readlines()
 
 	road := findCycle(brd, origin)
@@ -170,8 +176,11 @@ func part2() {
 		roadmap[tile] = struct{}{}
 	}
 
-	// hacks
-	brd[origin] = 'J'
+	// hack. Honestly figuring out which part is missing is a pain in the ass
+	// and is not really part of the core algorithm. I'd rather "cheat" by
+	// specifying the missing piece than trying to find a way to compute it
+	// programatically.
+	brd[origin] = missingPiece
 
 	// we are not on the roadmap yet
 	currentState := OUT
@@ -244,7 +253,7 @@ func part2() {
 			}
 		}
 	}
-	fmt.Println(count)
+	return count
 }
 
 func main() {
@@ -258,6 +267,6 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	// part1()
-	part2()
+	fmt.Println(part1())
+	fmt.Println(part2('J'))
 }
