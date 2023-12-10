@@ -13,3 +13,5 @@ test_stuff.go
 test/
 
 input.txt
+main.go
+top_3.txt
