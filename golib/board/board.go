@@ -4,6 +4,8 @@ import (
 	"aoc/golib/twod"
 	"bufio"
 	"io"
+	"maps"
+	"strings"
 )
 
 // For speed sake, code here will panic if something goes wrong, since I
@@ -129,8 +131,37 @@ func (u *Board) Size() int {
 	return len(u.locations)
 }
 
+func (u *Board) GetLocations() map[twod.Location]byte {
+	return u.locations
+}
+
+func (u *Board) GetLocationsCopy() map[twod.Location]byte {
+	return maps.Clone(u.locations)
+}
+
+func (u *Board) GetStringRepresentation() string {
+	b := &strings.Builder{}
+	if u.isRect {
+		for i := u.LeftBoundary[0]; i <= u.RightBoundary[0]; i++ {
+			for j := u.LeftBoundary[1]; j <= u.RightBoundary[1]; j++ {
+				b.WriteByte(u.locations[twod.Location{i, j}])
+			}
+			b.WriteByte('\n')
+		}
+		return b.String()
+	} else {
+		panic("unimplemented")
+	}
+}
+
 func (u *Board) Set(loc twod.Location, val byte) {
 	u.locations[loc] = val
+}
+
+func (u *Board) UpdateIfExists(loc twod.Location, val byte) {
+	if _, ok := u.locations[loc]; ok {
+		u.locations[loc] = val
+	}
 }
 
 func (u *Board) Get(loc twod.Location) (byte, bool) {
