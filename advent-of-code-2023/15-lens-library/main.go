@@ -46,6 +46,16 @@ func computeHash(s string) int {
 	return c
 }
 
+func part1() {
+	total := 0
+	inputlineTrimmed := strings.Trim(inputline, "\n")
+	parts := strings.Split(inputlineTrimmed, ",")
+	for _, part := range parts {
+		total += computeHash(part)
+	}
+	fmt.Println(total)
+}
+
 type headerWithVal struct {
 	header string
 	val    int
@@ -112,16 +122,6 @@ func part2() {
 	fmt.Println(total)
 }
 
-// func part1() {
-// 	total := 0
-// 	inputlineTrimmed := strings.Trim(inputline, "\n")
-// 	parts := strings.Split(inputlineTrimmed, ",")
-// 	for _, part := range parts {
-// 		total += computeHash(part)
-// 	}
-// 	fmt.Println(total)
-// }
-
 func main() {
 	// Run only 1 profile at a time!
 	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
@@ -133,6 +133,6 @@ func main() {
 	// Part 2 is not written above and commented below so that template compiles
 	// while solving part 1.
 
-	// part1()
+	part1()
 	part2()
 }
