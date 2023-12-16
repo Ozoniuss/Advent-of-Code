@@ -147,14 +147,9 @@ func Move(currentBean BeanWithDirection, board *rectboard.RectBoard, visited map
 }
 
 func part1() {
-	// bx := *board
-	// currentBean := BeanWithDirection{
-	// 	dir: twod.RIGHT,
-	// 	pos: twod.ORIGIN,
-	// }
 	currentBean := BeanWithDirection{
-		dir: twod.UP,
-		pos: twod.Location{23, 88},
+		dir: twod.RIGHT,
+		pos: twod.ORIGIN,
 	}
 	visited := make(map[twod.Location]struct{})
 	visitedWithDir := make(map[BeanWithDirection]struct{})
@@ -165,6 +160,8 @@ func part1() {
 func part2() {
 	bx := *board
 	allPositions := make([]BeanWithDirection, 0, 4*len(bx)*len(bx[0]))
+
+	// It doesn't matter these repeat
 	for i := 0; i < len(bx); i++ {
 		allPositions = append(
 			allPositions,
