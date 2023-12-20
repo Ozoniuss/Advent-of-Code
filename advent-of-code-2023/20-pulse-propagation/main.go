@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -131,27 +132,23 @@ func flip(state string) string {
 	panic("flip?")
 }
 
+func cacheMap(m map[string]int) string {
+	b := &strings.Builder{}
+	for _, v := range m {
+		b.WriteString(strconv.Itoa(v))
+	}
+	return b.String()
+}
+
+var cache = make(map[string]int)
+var original string = ""
+
 // deliverSignal marks the signal as having been sent to the other modules.
-func deliverSignal(sig signal) []string {
+func deliverSignal(step int, sig signal) []string {
 	delivered := []string{}
 	next := nextmodules[sig.sender]
 	// go through all connected modules
 	for _, nextm := range next {
-
-		if nextm == "rx" {
-			fmt.Println("here")
-			// panic(step)
-			// fmt.Println(modules["ps"].received)
-			fmt.Println(modules["xc"].received)
-			// fmt.Println(modules["ml"].received)
-			fmt.Println(modules["th"].received)
-			// fmt.Println(modules["zh"].received)
-			fmt.Println(modules["pd"].received)
-			// fmt.Println(modules["kh"].received)
-			// fmt.Println(modules["mk"].received)
-			fmt.Println(modules["bp"].received)
-		}
-
 		recvm, ok := modules[nextm]
 		if !ok {
 			continue
@@ -179,9 +176,14 @@ func deliverSignal(sig signal) []string {
 	return delivered
 }
 
+var globps int
+var globml int
+var globkh int
+var globmk int
+
 // calculateSendingSignal finds out what signal to send further. It returns
 // false as a second value if it should not send any signal further.
-func calculateSendingSignal(mname string) (signal, bool) {
+func calculateSendingSignal(step int, mname string) (signal, bool) {
 	if mname == BROADCASTER {
 		return signal{
 			sender:   BROADCASTER,
@@ -194,8 +196,48 @@ func calculateSendingSignal(mname string) (signal, bool) {
 	if !ok {
 		return signal{}, false
 	}
+	// This was a stupid hack I used during the contest. I figured out the
+	// number of inputs these conjuction modules had and then I noticed these
+	// sequences at some point become arithmetic sequences. So I figured I just
+	// had to find a common number of these arithmetic sequences.
+	//
+	// These are the sequences I got (I stopped randomly the execution, it
+	// doesn't matter what the added constant is because the sequences generate
+	// the same numbers anyway)
+	//
+	// kh 4001a + 176043
+	// ml 3823b + 175857
+	// mk 3877c + 174464
+	// ps 3847d + 173114
+	//
+	// Put these in wolfram alpha to find the following solution (here is the
+	// exact query)
+	// https://www.wolframalpha.com/input?i=solve+4001a+%2B+176043+%3D+3823b+%2B+175857+%3D3877c+%2B+174464+%3D+3847d+%2B+173114+over+the+integers
+	//
+	// An integer solution is for example a = 57019352993 + 57019353037n
+	// So you could just replace a with 57019352993, compute kh, add 1 since
+	// you start steps from 0 and you're done.
 	if m.mtype == CONJUNCTION {
+		if m.name == "ps" && cacheMap(m.received) == "1111111" {
+			fmt.Println("ps", step-globps, step)
+			globps = step
+		}
+		if m.name == "ml" && cacheMap(m.received) == "1111111111" {
+			fmt.Println("ml", step-globml, step)
+			globml = step
+		}
+		if m.name == "kh" && cacheMap(m.received) == "1111111" {
+			fmt.Println("kh", step-globkh, step)
+			globkh = step
+		}
+		if m.name == "mk" && cacheMap(m.received) == "1111111" {
+
+			fmt.Println("mk", step-globmk, step)
+			globmk = step
+		}
+
 		for _, s := range m.received {
+			//
 			// a low pulse exists, send a high pulse
 			if s == 0 {
 				return signal{sender: mname, strenght: 1}, true
@@ -231,7 +273,7 @@ func calculateSendingSignal(mname string) (signal, bool) {
 	// return signal{}, false
 }
 
-func sendAllSignals() (int, int) {
+func sendAllSignals(step int) (int, int) {
 	q := []string{}
 
 	highs := 0
@@ -243,7 +285,7 @@ func sendAllSignals() (int, int) {
 		top := q[0]
 		q = q[1:]
 
-		sig, ok := calculateSendingSignal(top)
+		sig, ok := calculateSendingSignal(step, top)
 		if !ok {
 			// fmt.Println("unforuante", top)
 			continue
@@ -256,7 +298,7 @@ func sendAllSignals() (int, int) {
 		} else {
 			lows += len(nextmodules[top])
 		}
-		delivered := deliverSignal(sig)
+		delivered := deliverSignal(step, sig)
 		q = append(q, delivered...)
 	}
 	return highs, lows
@@ -287,13 +329,30 @@ func part1() {
 	fmt.Printf("modules, %+v\n", modules)
 	fmt.Printf("next, %+v\n", nextmodules)
 	highs, lows := 0, 0
-	for i := 0; i < 100000; i++ {
-		highsx, lowsx := sendAllSignals()
+	for i := 0; i < 10000000; i++ {
+		highsx, lowsx := sendAllSignals(i)
 		highs += highsx
 		lows += lowsx
 	}
 	fmt.Println(highs, lows, highs*lows)
 }
+
+// Notes for part 2
+// There is only the conj module pointing to rx
+// there are 4 conj modules pointing to the last conj module
+// fmt.Println(modules["th"].received) <- kh
+// fmt.Println(modules["pd"].received) <- mk
+// fmt.Println(modules["xc"].received) <- ps
+// fmt.Println(modules["bp"].received) <- ml
+// And there are 4 conj modules pointing only to the latter
+// 4 conj modules (and their only parent)
+// fmt.Println(modules["ps"].received)
+// fmt.Println(modules["ml"].received)
+// fmt.Println(modules["kh"].received)
+// fmt.Println(modules["mk"].received)
+// One of the latter conj modules needs to output 0
+// rx is the last one in the chain.
+// One of ps, ml, kh and mk needs to be full 1.
 
 func main() {
 	// Run only 1 profile at a time!
