@@ -3,7 +3,7 @@ import math
 import re
 from fractions import Fraction
 
-f = open("input.txt", "r")
+f = open("example.txt", "r")
 data = f.read().strip()
 lines = data.split("\n")
 
@@ -38,14 +38,15 @@ with I assumed the coordinates add up to 0.
 Now, a nice trick here from a design perspective would have been to include at
 least two parallel lines here. In my Go code I did not find any parallel lines,
 so I ended up brute forcing this motherfucker. But, if there are two parallel
-lines, they will include the line we're looking for, thus then the plane formed
-by them lines is perpendicular to the plane that is perpendicular to the
-required line. So we would be able to determine the "normal vector" of that plane
-which is the direction of the line we're looking for. Its coordinates should
-add up to 0. However it doesn't matter as much, just for validation
+lines, they will include the line we're looking for, and we can then just intersect
+a few lines with this plane to find some points on the line. Keep in mind that
+our line passes through all other lines so we're sure that these points are 
+on the line as well.
 
 Now we can project some lines onto the plane and find their intersection. And
 we have a point, so we just need to sum up its coordinates.
+
+Well, I did it in Python too, still no parallel lines:(
 """
 
 a0 = Int("a0")
