@@ -1,6 +1,7 @@
 from z3 import Int, set_param, Solver
 import math
 import re
+from fractions import Fraction
 
 f = open("input.txt", "r")
 data = f.read().strip()
@@ -58,6 +59,20 @@ c = Int("c")
 solver = Solver()
 
 print(3 // -2)
+
+"""
+Well, it turns out there are no parallel lines here. If we omit one axis, there
+are a few ones which are parallel, not sure how to make use of that. Part 1 had
+exactly two parallel lines, which made me think that part b would have had some.
+Unfortunately, best I can do with this is Z3.
+"""
+for i in range(len(vals) - 1):
+    for j in range(i + 1, len(vals)):
+        f1 = Fraction(vals[i][3], vals[j][3])
+        f2 = Fraction(vals[i][4], vals[j][4])
+        f3 = Fraction(vals[i][5], vals[j][5])
+        if f1 == f2 == f3:
+            print("parallel", i, j)
 
 # Disgusting solution, disgusting part b. If there would have been at least two
 # parallel planes (see comment in Go file)
