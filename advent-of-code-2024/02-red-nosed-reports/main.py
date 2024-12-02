@@ -36,11 +36,7 @@ def is_safe(nums: list[int]):
 def is_safe_tolerant(nums: list[int]):
     to_check = [nums]
     for i in range(len(nums)):
-        removed_tolerance = []
-        for idx, n in enumerate(nums):
-            if idx != i:
-                removed_tolerance.append(n)
-        to_check.append(removed_tolerance)
+        to_check.append(nums[:i] + nums[i+1:])
     return any(list(map(is_safe, to_check)))
 
 safec = 0
