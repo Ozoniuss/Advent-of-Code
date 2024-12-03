@@ -37,7 +37,7 @@ source "$SCRIPT_DIR/.env"
 SESSION_ID=$AOC_SESSION_ID
 
 DAY=1
-YEAR=2023
+YEAR=2024
 
 if [[ ! -z $1 ]]
 then
@@ -70,8 +70,7 @@ then
 fi
 
 mkdir "$DIR"
-touch "$DIR/main.go"
-touch "$DIR/main_test.go"
+touch "$DIR/main.py"
 touch "$DIR/statement.txt"
 touch "$DIR/input.txt"
 
@@ -85,6 +84,5 @@ else
 fi
 
 # use your own template
-cp ../aocommon/template.go "$DIR/main.go"
-cp ../aocommon/template_benchmark.go "$DIR/main_test.go"
+cp ../aocommon/template.py "$DIR/main.py"
 echo $URL > "$DIR/statement.txt"
