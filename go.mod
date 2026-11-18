@@ -1,8 +1,9 @@
 module aoc
 
-go 1.21.0
+go 1.27
 
 require (
+	github.com/dominikbraun/graph v0.23.0
 	github.com/pkg/profile v1.7.0
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
 )
