@@ -28,23 +28,19 @@ func main() {
 				b.WriteRune(r)
 			}
 		}
+
 		line = b.String()
-		shouldExit := true
-		for {
-			shouldExit = true
-			for i := 1; i < len(line); i++ {
-				if line[i]-line[i-1] == 'a'-'A' || line[i-1]-line[i] == 'a'-'A' {
-					line = string(line[:i-1]) + string(line[i+1:])
-					shouldExit = false
-					break
-				}
-			}
-			if shouldExit {
-				break
+
+		stk := []byte{}
+		for i := 0; i < len(line); i++ {
+			stk = append(stk, line[i])
+			if len(stk) >= 2 && (stk[len(stk)-1]-stk[len(stk)-1-1] == 'a'-'A' || stk[len(stk)-1-1]-stk[len(stk)-1] == 'a'-'A') {
+				stk = stk[:len(stk)-2]
 			}
 		}
-		fmt.Println(len(line))
-		minlen = min(minlen, len(line))
+
+		fmt.Println(len(stk))
+		minlen = min(minlen, len(stk))
 	}
 	fmt.Println(minlen)
 }
